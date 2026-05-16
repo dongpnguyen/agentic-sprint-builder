@@ -14,7 +14,7 @@ import { deployGeneratedProjectContainers, validateGeneratedProjectBuildGuard } 
 import { validateGeneratedProject } from '@/lib/validation/generated-project';
 import { createBlockingIssueFromExecution, createBlockingIssueFromReview, formatBlockingIssue } from '@/lib/validation/blocking-issues';
 import { formatRepairScope, inferQaRepairScope, inferStaticRepairScope } from '@/lib/validation/repair-scope';
-import type { AgentEvent, AssetAgentOutput, BlockingIssue, DeploymentOutput, DevOutput, GeneratedExecutionValidationResult, GeneratedFile, ProductAssetMetadata, QAReviewOutput, RepairScope, RunRequest, RunResult } from '@/lib/types';
+import type { AgentEvent, AssetAgentOutput, BlockingIssue, DeploymentOutput, DevOutput, GeneratedExecutionValidationResult, GeneratedFile, ProductAssetMetadata, QAReviewOutput, RepairScope, RunProgressReporter, RunRequest, RunResult } from '@/lib/types';
 
 const MAX_QA_FIX_ITERATIONS = 3;
 const MAX_BUILD_READINESS_FIX_ITERATIONS = 3;
@@ -377,7 +377,7 @@ function reconcilePostDeploymentReviewWithWorkspace(params: {
   };
 }
 
-function createTimestampRunId(date = new Date()) {
+export function createTimestampRunId(date = new Date()) {
   const pad = (value: number) => value.toString().padStart(2, '0');
 
   return [
@@ -390,8 +390,34 @@ function createTimestampRunId(date = new Date()) {
   ].join('-');
 }
 
-export async function runSprintBuilder(input: RunRequest): Promise<RunResult> {
-  const runId = createTimestampRunId();
+function progressStepFromEvent(event: AgentEvent) {
+  const task = event.task.toLowerCase();
+  if (event.agentId === 'ba') return 'ba';
+  if (event.agentId === 'asset') return 'asset';
+  if (event.agentId === 'dev') return 'dev';
+  if (event.agentId === 'deploy') {
+    return /build and run|runtime|container deployment|local container/.test(task) ? 'runtime' : 'deploy';
+  }
+  if (/standard guard/.test(task)) return 'standard-guard';
+  if (/run\/build readiness|static readiness/.test(task)) return 'static-validation';
+  if (/post-deployment|e2e/.test(task)) return 'qa';
+  return 'qa';
+}
+
+function progressStatusFromEvent(event: AgentEvent) {
+  if (event.eventType === 'ERROR') return 'FAIL';
+  if (event.eventType === 'IDLE') return 'SKIPPED';
+  if (event.eventType === 'WORK_COMPLETE' || event.eventType === 'TASK_COMPLETE') {
+    return /needs_fix|failed|skipped until|blocking/i.test(event.task) ? 'FAIL' : 'PASS';
+  }
+  return 'RUNNING';
+}
+
+export async function runSprintBuilder(
+  input: RunRequest,
+  options: { runId?: string; onProgress?: RunProgressReporter } = {}
+): Promise<RunResult> {
+  const runId = options.runId || createTimestampRunId();
   const events: AgentEvent[] = [];
   const topic = input.topic || 'Simple Shopping Cart App';
   const inputRequirementImages = input.requirementImages?.length
@@ -409,7 +435,19 @@ export async function runSprintBuilder(input: RunRequest): Promise<RunResult> {
   async function emit(params: Parameters<typeof emitDashboardEvent>[0]) {
     const event = await emitDashboardEvent(params);
     events.push(event);
+    await options.onProgress?.({
+      stepId: progressStepFromEvent(event),
+      stepStatus: progressStatusFromEvent(event),
+      level: event.eventType === 'ERROR' ? 'error' : event.eventType === 'WORK_COMPLETE' || event.eventType === 'TASK_COMPLETE' ? 'success' : 'info',
+      message: event.toAgent ? `${event.agentId.toUpperCase()} -> ${event.toAgent.toUpperCase()}: ${event.task}` : `${event.agentId.toUpperCase()}: ${event.task}`
+    });
   }
+
+  await options.onProgress?.({
+    stepId: 'ba',
+    stepStatus: 'RUNNING',
+    message: 'Run started.'
+  });
 
   if (input.cleanGeneratedCode) {
     await clearGeneratedCode();
@@ -524,15 +562,33 @@ export async function runSprintBuilder(input: RunRequest): Promise<RunResult> {
   let preDeploymentGateRepairScope: RepairScope | undefined;
 
   async function evaluatePreDeploymentGate() {
+    await options.onProgress?.({
+      stepId: 'static-validation',
+      stepStatus: 'RUNNING',
+      message: 'Running static generated-code readiness checks.'
+    });
     buildReadiness = validateGeneratedProject(devOutput, validationContext);
     preDeploymentGuardValidation = undefined;
 
     if (buildReadiness.status === 'NEEDS_FIX') {
+      await options.onProgress?.({
+        stepId: 'static-validation',
+        stepStatus: 'FAIL',
+        level: 'warn',
+        message: `Static readiness found ${buildReadiness.findings.length} blocker(s).`
+      });
       preDeploymentGateReview = createBuildReadinessReview(buildReadiness.findings, buildReadiness.fixInstructions);
       existingFiles = await readGeneratedCodeSnapshot();
       preDeploymentGateRepairScope = inferStaticRepairScope(buildReadiness, existingFiles);
       return;
     }
+
+    await options.onProgress?.({
+      stepId: 'static-validation',
+      stepStatus: 'PASS',
+      level: 'success',
+      message: 'Static readiness checks passed.'
+    });
 
     await emit({
       agentId: 'qa',
@@ -540,7 +596,7 @@ export async function runSprintBuilder(input: RunRequest): Promise<RunResult> {
       task: 'Run Standard Guard Mode pre-deployment checks',
       artifact: 'STANDARD_GUARD.md'
     });
-    preDeploymentGuardValidation = await validateGeneratedProjectBuildGuard();
+    preDeploymentGuardValidation = await validateGeneratedProjectBuildGuard(options.onProgress);
     await emit({
       agentId: 'qa',
       eventType: preDeploymentGuardValidation.status === 'NEEDS_FIX' ? 'ERROR' : 'WORK_COMPLETE',
@@ -772,7 +828,7 @@ export async function runSprintBuilder(input: RunRequest): Promise<RunResult> {
       task: 'Build and run local container deployment',
       artifact: 'DEPLOYMENT.md'
     });
-    executionValidation = await deployGeneratedProjectContainers();
+    executionValidation = await deployGeneratedProjectContainers(options.onProgress);
     await emit({
       agentId: 'deploy',
       eventType: executionValidation.status === 'PASS' ? 'WORK_COMPLETE' : 'ERROR',
@@ -929,7 +985,7 @@ export async function runSprintBuilder(input: RunRequest): Promise<RunResult> {
         task: `Build and run local container deployment iteration ${deploymentFixIterations}`,
         artifact: 'DEPLOYMENT.md'
       });
-      executionValidation = await deployGeneratedProjectContainers();
+      executionValidation = await deployGeneratedProjectContainers(options.onProgress);
       await emit({
         agentId: 'deploy',
         eventType: executionValidation.status === 'PASS' ? 'WORK_COMPLETE' : 'ERROR',

@@ -84,6 +84,13 @@ export function updateRunProgress(runId: string, update: RunProgressUpdate) {
 
   if (update.stepId) {
     const step = ensureStep(snapshot, update.stepId, update.stepLabel);
+    if (update.stepStatus === 'RUNNING') {
+      for (const item of snapshot.steps) {
+        if (item.id !== update.stepId && item.status === 'RUNNING') {
+          item.status = 'PASS';
+        }
+      }
+    }
     if (update.stepStatus) step.status = update.stepStatus;
     snapshot.currentStepId = update.stepId;
   }
@@ -106,6 +113,11 @@ export function completeRunStatus(runId: string, result: RunResult) {
   snapshot.updatedAt = now();
   snapshot.result = result;
   snapshot.currentStepId = 'complete';
+  for (const step of snapshot.steps) {
+    if (step.id !== 'complete' && (step.status === 'RUNNING' || step.status === 'PENDING')) {
+      step.status = step.status === 'RUNNING' ? 'PASS' : 'SKIPPED';
+    }
+  }
   ensureStep(snapshot, 'complete').status = hasBlockingIssues ? 'FAIL' : 'PASS';
   appendLog(snapshot, {
     stepId: 'complete',

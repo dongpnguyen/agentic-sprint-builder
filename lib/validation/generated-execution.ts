@@ -1163,9 +1163,18 @@ export async function validateGeneratedProjectBuildGuard(onProgress?: RunProgres
     message: `Standard Guard Mode workspace created at ${codeDir}.`
   });
 
+  const guardProgress: RunProgressReporter | undefined = onProgress
+    ? (update) =>
+        onProgress({
+          ...update,
+          stepId: 'standard-guard',
+          stepLabel: 'Standard Guard Mode'
+        })
+    : undefined;
+
   const steps: GeneratedValidationStep[] = [await copyEnvExampleIfSafe(codeDir)];
-  steps.push(...(await validateLocalNode(codeDir, logDir, onProgress)));
-  steps.push(...(await validateLocalPython(codeDir, logDir, onProgress)));
+  steps.push(...(await validateLocalNode(codeDir, logDir, guardProgress)));
+  steps.push(...(await validateLocalPython(codeDir, logDir, guardProgress)));
 
   return addRepairScope(buildResult({ startedAt, workspace: codeDir, steps }));
 }

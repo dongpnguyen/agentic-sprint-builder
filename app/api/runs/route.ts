@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z, ZodError } from 'zod';
 import { RUN_LIMITS } from '@/lib/config/limits';
-import { runSprintBuilder } from '@/lib/orchestrator';
+import { createTimestampRunId, runSprintBuilder } from '@/lib/orchestrator';
+import { completeRunStatus, createRunStatus, failRunStatus, updateRunProgress } from '@/lib/runs/run-status-store';
 import { ApiGuardError, assertRunApiAccess } from '@/lib/security/api-guard';
 
 export const runtime = 'nodejs';
@@ -141,16 +142,21 @@ export async function POST(request: NextRequest) {
     return errorResponse(error);
   }
 
-  try {
-    const result = await runSprintBuilder(body);
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error('[runs] Run execution failed', error);
-    return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : 'Run failed. Check server logs for details.'
-      },
-      { status: 500 }
-    );
-  }
+  const runId = createTimestampRunId();
+  const topic = body.topic || 'Simple Shopping Cart App';
+  const snapshot = createRunStatus(runId, topic);
+
+  void runSprintBuilder(body, {
+    runId,
+    onProgress: (update) => {
+      updateRunProgress(runId, update);
+    }
+  })
+    .then((result) => completeRunStatus(runId, result))
+    .catch((error) => {
+      console.error('[runs] Run execution failed', error);
+      failRunStatus(runId, error);
+    });
+
+  return NextResponse.json(snapshot, { status: 202 });
 }

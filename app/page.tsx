@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getRunTimelineEvents } from '@/lib/timeline';
 import { formatBlockingIssueList } from '@/lib/validation/blocking-issues';
-import type { ProductAsset, RequirementImage, RunResult } from '@/lib/types';
+import type { ProductAsset, RequirementImage, RunProgressStepStatus, RunResult, RunStatusSnapshot } from '@/lib/types';
 
 const MAX_REQUIREMENT_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_REQUIREMENT_IMAGES = 8;
@@ -59,9 +59,51 @@ export default function HomePage() {
   const [autoDownloadProductAssets, setAutoDownloadProductAssets] = useState(false);
   const [cleanGeneratedCode, setCleanGeneratedCode] = useState(true);
   const [result, setResult] = useState<RunResult | null>(null);
+  const [runStatus, setRunStatus] = useState<RunStatusSnapshot | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+
+  useEffect(() => {
+    if (!loading || !runStatus?.runId || result) return;
+
+    let cancelled = false;
+
+    async function pollRunStatus() {
+      try {
+        const response = await fetch(`/api/runs/${runStatus?.runId}/status`, { cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not read run status.');
+        if (cancelled) return;
+
+        setRunStatus(data);
+
+        if (data.status === 'COMPLETED' && data.result) {
+          setResult(data.result);
+          setShowCompletionDialog(true);
+          setLoading(false);
+        } else if (data.status === 'FAILED') {
+          setError(data.error || 'Run failed. Check server logs for details.');
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Could not read run status.');
+          setLoading(false);
+        }
+      }
+    }
+
+    void pollRunStatus();
+    const interval = window.setInterval(() => {
+      void pollRunStatus();
+    }, 2000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [loading, result, runStatus?.runId]);
 
   async function loadRequirementImages(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
@@ -144,7 +186,9 @@ export default function HomePage() {
     setLoading(true);
     setError('');
     setResult(null);
+    setRunStatus(null);
     setShowCompletionDialog(false);
+    let keepPolling = false;
     try {
       const response = await fetch('/api/runs', {
         method: 'POST',
@@ -170,12 +214,18 @@ export default function HomePage() {
           : '';
         throw new Error([data.error || 'Run failed', issueText].filter(Boolean).join('\n'));
       }
+      if (data.status && data.runId && !data.devOutput) {
+        keepPolling = true;
+        setRunStatus(data);
+        return;
+      }
+
       setResult(data);
       setShowCompletionDialog(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
-      setLoading(false);
+      if (!keepPolling) setLoading(false);
     }
   }
 
@@ -193,7 +243,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen p-6">
-      {loading && <ExecutingOverlay />}
+      {loading && <ExecutingOverlay runStatus={runStatus} />}
       {showCompletionDialog && result && (
         <CompletionDialog
           result={result}
@@ -264,16 +314,118 @@ export default function HomePage() {
   );
 }
 
-function ExecutingOverlay() {
+function ExecutingOverlay({ runStatus }: { runStatus: RunStatusSnapshot | null }) {
+  const currentStep = runStatus?.steps.find((step) => step.id === runStatus.currentStepId);
+  const recentLogs = runStatus?.logs.slice(-8).reverse() ?? [];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm">
-      <div className="w-[min(90vw,28rem)] rounded-2xl bg-white p-8 text-center shadow-2xl">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
-        <p className="mt-6 text-2xl font-bold text-slate-950">Executing ...</p>
-        <p className="mt-2 text-sm text-slate-500">The AI team is generating, reviewing, deploying, and testing the app.</p>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-4 backdrop-blur-sm">
+      <div className="mx-auto my-6 w-[min(96vw,58rem)] rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Executing ...</p>
+            <h2 className="mt-1 text-2xl font-bold text-slate-950">
+              {currentStep ? currentStep.label : 'Preparing run'}
+            </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              {runStatus?.runId ? `Run ID: ${runStatus.runId}` : 'Creating run workspace and status channel.'}
+            </p>
+          </div>
+          <div className="flex items-center gap-3 rounded-2xl bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700">
+            <span className="h-3 w-3 animate-pulse rounded-full bg-blue-600" />
+            {runStatus?.status || 'STARTING'}
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">Executing Steps</h3>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {(runStatus?.steps ?? []).map((step) => (
+                <div
+                  key={step.id}
+                  className={`rounded-2xl border p-3 ${step.id === runStatus?.currentStepId ? 'border-blue-300 bg-blue-50' : 'border-slate-200 bg-slate-50'}`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-slate-900">{step.label}</p>
+                    <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusBadgeClass(step.status)}`}>
+                      {statusLabel(step.status)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {!runStatus?.steps.length && (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                  Waiting for the run status to initialize.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wide text-slate-500">Live Log</h3>
+            <div className="mt-3 max-h-80 space-y-2 overflow-auto rounded-2xl bg-slate-950 p-4">
+              {recentLogs.length ? (
+                recentLogs.map((log, index) => (
+                  <div key={`${log.timestamp}-${index}`} className="text-sm">
+                    <p className={`font-semibold ${logLevelClass(log.level)}`}>
+                      {new Date(log.timestamp).toLocaleTimeString()} · {log.level.toUpperCase()}
+                    </p>
+                    <p className="mt-1 whitespace-pre-wrap text-slate-200">{log.message}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-slate-300">Waiting for the first progress event.</p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
+}
+
+function statusLabel(status: RunProgressStepStatus) {
+  switch (status) {
+    case 'PENDING':
+      return 'Waiting';
+    case 'RUNNING':
+      return 'Running';
+    case 'PASS':
+      return 'Passed';
+    case 'FAIL':
+      return 'Needs fix';
+    case 'SKIPPED':
+      return 'Skipped';
+  }
+}
+
+function statusBadgeClass(status: RunProgressStepStatus) {
+  switch (status) {
+    case 'PENDING':
+      return 'bg-slate-200 text-slate-600';
+    case 'RUNNING':
+      return 'bg-blue-600 text-white';
+    case 'PASS':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'FAIL':
+      return 'bg-red-100 text-red-700';
+    case 'SKIPPED':
+      return 'bg-amber-100 text-amber-700';
+  }
+}
+
+function logLevelClass(level: RunStatusSnapshot['logs'][number]['level']) {
+  switch (level) {
+    case 'success':
+      return 'text-emerald-300';
+    case 'warn':
+      return 'text-amber-300';
+    case 'error':
+      return 'text-red-300';
+    default:
+      return 'text-blue-300';
+  }
 }
 
 function CompletionDialog(props: {
