@@ -1,0 +1,35 @@
+
+> agentic-sprint-builder@1.0.0 dev
+> next dev -p 3002
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3002
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 5.6s
+ ○ Compiling / ...
+ ✓ Compiled / in 5.7s (538 modules)
+ GET / 200 in 5977ms
+ ✓ Compiled in 251ms (277 modules)
+ GET / 200 in 111ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 526ms (527 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 601ms
+ ○ Compiling /api/runs ...
+ ✓ Compiled /api/runs in 1496ms (329 modules)
+ POST /api/runs 200 in 344701ms
+ ✓ Compiled in 142ms (261 modules)
+ ✓ Compiled in 348ms (540 modules)
+ ✓ Compiled /_not-found in 111ms (529 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 816ms (756 modules)
+ GET /_next/static/webpack/4240ce760f64c092.webpack.hot-update.json 500 in 2833ms
+ GET / 200 in 336ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 500 in 60ms
+ GET /_next/static/chunks/main-app.js?v=1778909104822 500 in 50ms
+ GET /_next/static/css/app/layout.css?v=1778909104822 500 in 125ms
+ GET /_next/static/chunks/app-pages-internals.js 500 in 117ms
+ ✓ Compiled in 294ms (466 modules)
+ ✓ Compiled in 405ms (765 modules)
+[?25h

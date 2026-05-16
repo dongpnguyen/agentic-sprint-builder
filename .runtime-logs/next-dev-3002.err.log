@@ -1,0 +1,38 @@
+npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+npm warn Unknown user config "​". This will stop working in the next major version of npm.
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at Object.__webpack_require__ [as require] (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:33:42)
+    at JSON.parse (<anonymous>)
+digest: "2627489771"
+TypeError: __webpack_modules__[moduleId] is not a function
+    at Object.__webpack_require__ [as require] (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:33:42)
+    at require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:40:20064)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:108376
+    at ea (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:108583)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:110813
+    at Object._fromJSON (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:111370)
+    at JSON.parse (<anonymous>)
+    at ec (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:109078)
+    at eo (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:108123)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115291
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115308
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115341
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115358
+    at t (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115581)
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at Object.__webpack_require__ [as require] (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:33:42)
+    at require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:40:20064)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:108376
+    at ea (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:108583)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:110813
+    at Object._fromJSON (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:111370)
+    at JSON.parse (<anonymous>)
+    at ec (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:109078)
+    at eo (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:108123)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115291
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115308
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115341
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115358
+    at t (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\compiled\next-server\app-page.runtime.dev.js:35:115581) {
+  page: '/runs/2026-05-16-09-33-24'
+}

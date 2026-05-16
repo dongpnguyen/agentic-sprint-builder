@@ -206,7 +206,17 @@ function validationText(validation: GeneratedExecutionValidationResult) {
 export function inferExecutionRepairScope(validation: GeneratedExecutionValidationResult, files: GeneratedFile[]): RepairScope {
   const text = validationText(validation);
 
-  if (/docker|compose|dockerfile|containerfile|failed to solve|healthcheck|service_healthy|bind for|port is already allocated/i.test(text)) {
+  if (/pip install|requirements\.txt|no matching distribution found|could not find a version that satisfies|python standard-library|sqlmodel|sqlalchemy|fastapi|uvicorn/i.test(text)) {
+    return createScope({
+      kind: 'backend',
+      label: 'Backend dependency/runtime repair',
+      instructions: 'Fix generated backend dependency manifests or Python runtime code using files discovered from the generated-code snapshot and validation logs.',
+      text,
+      files
+    });
+  }
+
+  if (/failed to solve|dockerfile|containerfile|compose config|invalid compose|bind for|port is already allocated|pull access denied|no such service/i.test(text)) {
     return createScope({
       kind: 'docker',
       label: 'Container build/runtime repair',
@@ -242,6 +252,16 @@ export function inferExecutionRepairScope(validation: GeneratedExecutionValidati
       kind: 'backend',
       label: 'Backend runtime repair',
       instructions: 'Fix generated backend runtime errors using files discovered from the generated-code snapshot and validation logs.',
+      text,
+      files
+    });
+  }
+
+  if (/docker|compose|healthcheck|service_healthy|container/i.test(text)) {
+    return createScope({
+      kind: 'docker',
+      label: 'Container build/runtime repair',
+      instructions: 'Fix the generated project container build or runtime wiring using files discovered from the generated-code snapshot and validation logs.',
       text,
       files
     });
@@ -322,6 +342,16 @@ export function inferStaticRepairScope(validation: GeneratedProjectValidation, f
 }
 
 export function inferQaRepairScope(qaFeedback: string, files: GeneratedFile[]): RepairScope {
+  if (/pip install|requirements\.txt|no matching distribution found|could not find a version that satisfies|python standard-library|sqlmodel|sqlalchemy|fastapi|uvicorn/i.test(qaFeedback)) {
+    return createScope({
+      kind: 'backend',
+      label: 'QA backend dependency/runtime repair',
+      instructions: 'Fix generated backend dependency manifests or Python runtime code discovered from QA feedback and the generated-code snapshot.',
+      text: qaFeedback,
+      files
+    });
+  }
+
   if (/docker|compose|dockerfile|container|healthcheck|port/i.test(qaFeedback)) {
     return createScope({
       kind: 'docker',

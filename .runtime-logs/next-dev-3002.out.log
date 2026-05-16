@@ -1,0 +1,56 @@
+
+> agentic-sprint-builder@1.0.0 dev
+> next dev -p 3002 -H 127.0.0.1
+
+  ▲ Next.js 14.2.35
+  - Local:        http://127.0.0.1:3002
+  - Network:      http://127.0.0.1:3002
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 12.3s
+ ○ Compiling / ...
+ ✓ Compiled / in 13.7s (536 modules)
+ ✓ Compiled in 556ms (276 modules)
+ GET / 200 in 266ms
+ ○ Compiling /api/runs ...
+ ✓ Compiled /api/runs in 1546ms (89 modules)
+ POST /api/runs 200 in 449779ms
+ ○ Compiling /runs/[runId] ...
+ ✓ Compiled /runs/[runId] in 1024ms (529 modules)
+ ✓ Compiled in 590ms (277 modules)
+ ✓ Compiled in 241ms (277 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1366ms (741 modules)
+ GET /runs/2026-05-16-09-33-24 500 in 2546ms
+ ✓ Compiled / in 325ms (314 modules)
+ GET / 200 in 615ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 803ms (766 modules)
+ GET /_next/static/css/app/layout.css?v=1778901008817 404 in 1000ms
+ GET /_next/static/chunks/main-app.js?v=1778901008817 404 in 1000ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 985ms
+ GET /_next/static/chunks/app/page.js 404 in 707ms
+ GET / 200 in 153ms
+ GET /_next/static/css/app/layout.css?v=1778901016800 404 in 72ms
+ GET /_next/static/chunks/main-app.js?v=1778901016800 404 in 80ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 73ms
+ GET /_next/static/chunks/app/page.js 404 in 81ms
+ GET / 200 in 48ms
+ GET /_next/static/css/app/layout.css?v=1778901026212 404 in 50ms
+ GET /_next/static/chunks/main-app.js?v=1778901026212 404 in 57ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 69ms
+ GET /_next/static/chunks/app/page.js 404 in 66ms
+ GET / 200 in 74ms
+ GET /_next/static/css/app/layout.css?v=1778901029330 404 in 43ms
+ GET /_next/static/chunks/main-app.js?v=1778901029330 404 in 57ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 59ms
+ GET /_next/static/chunks/app/page.js 404 in 55ms
+ GET / 200 in 115ms
+ GET /_next/static/css/app/layout.css?v=1778901039006 404 in 44ms
+ GET /_next/static/chunks/main-app.js?v=1778901039006 404 in 79ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 49ms
+ GET /_next/static/chunks/app/page.js 404 in 65ms
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 41ms
+ GET / 200 in 88ms
+ GET /_next/static/css/app/layout.css?v=1778901084453 404 in 86ms

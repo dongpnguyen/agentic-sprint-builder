@@ -1,4 +1,4 @@
-export type AgentId = 'ba' | 'dev' | 'qa';
+export type AgentId = 'ba' | 'asset' | 'dev' | 'qa' | 'deploy';
 
 export type DashboardEventType =
   | 'THINKING'
@@ -25,50 +25,45 @@ export interface RunRequest {
   techSpec?: string | null;
   apiSpec?: string;
   topic?: string;
-}
-
-export type RunJobStatus = 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
-export type RunProgressStepStatus = 'PENDING' | 'RUNNING' | 'PASS' | 'FAIL' | 'SKIPPED';
-export type RunProgressLogLevel = 'info' | 'success' | 'warn' | 'error';
-
-export interface RunProgressStep {
-  id: string;
-  label: string;
-  status: RunProgressStepStatus;
-}
-
-export interface RunProgressLogEntry {
-  timestamp: string;
-  level: RunProgressLogLevel;
-  message: string;
-}
-
-export interface RunProgressUpdate {
-  stepId?: string;
-  stepLabel?: string;
-  stepStatus?: RunProgressStepStatus;
-  level?: RunProgressLogLevel;
-  message: string;
-}
-
-export type RunProgressReporter = (update: RunProgressUpdate) => void | Promise<void>;
-
-export interface RunStatusSnapshot {
-  runId: string;
-  status: RunJobStatus;
-  createdAt: string;
-  updatedAt: string;
-  topic: string;
-  currentStepId?: string;
-  steps: RunProgressStep[];
-  logs: RunProgressLogEntry[];
-  result?: RunResult;
-  error?: string;
+  cleanGeneratedCode?: boolean;
+  requirementImages?: RequirementImage[] | null;
+  requirementImage?: RequirementImage | null;
+  productAssets?: ProductAsset[] | null;
+  autoDownloadProductAssets?: boolean;
 }
 
 export interface GeneratedFile {
   path: string;
   content: string;
+}
+
+export interface RequirementImage {
+  name: string;
+  mimeType: 'image/png' | 'image/jpeg' | 'image/webp';
+  sizeBytes: number;
+  dataUrl: string;
+}
+
+export type RequirementImageMetadata = Omit<RequirementImage, 'dataUrl'>;
+
+export interface ProductAsset {
+  name: string;
+  mimeType: 'image/png' | 'image/jpeg' | 'image/webp';
+  sizeBytes: number;
+  dataUrl: string;
+  originalName?: string;
+  originalSizeBytes?: number;
+  relativePath?: string;
+  sourceUrl?: string;
+  license?: string;
+  licenseUrl?: string;
+  creator?: string;
+  provider?: string;
+}
+
+export interface ProductAssetMetadata extends Omit<ProductAsset, 'dataUrl'> {
+  publicPath: string;
+  outputPath: string;
 }
 
 export interface DevOutput {
@@ -77,15 +72,10 @@ export interface DevOutput {
   setupInstructions: string;
 }
 
-export type RepairScopeKind = 'initial' | 'docker' | 'frontend' | 'backend' | 'database' | 'tests' | 'docs' | 'config' | 'unknown';
-
-export interface RepairScope {
-  kind: RepairScopeKind;
-  label: string;
+export interface DeploymentOutput {
+  summary: string;
+  files: GeneratedFile[];
   instructions: string;
-  candidatePaths: string[];
-  allowedDirectories: string[];
-  requiresPlanning?: boolean;
 }
 
 export type QAStatus = 'PASS' | 'NEEDS_FIX';
@@ -97,51 +87,57 @@ export interface QAReviewOutput {
   report: string;
 }
 
-export type GeneratedRuntimeServiceStatus = 'RUNNING' | 'FAILED' | 'SKIPPED';
+export type BlockingIssuePhase =
+  | 'build_readiness'
+  | 'code_review'
+  | 'deployment_readiness'
+  | 'container_runtime'
+  | 'post_deploy_qa';
 
-export interface GeneratedRuntimeServiceResult {
-  name: 'backend' | 'frontend';
-  status: GeneratedRuntimeServiceStatus;
-  cwd: string;
-  command: string;
-  url?: string;
-  port?: number;
-  pid?: number;
-  logFile?: string;
-  message: string;
-}
+export type BlockingIssueOwner = 'dev' | 'deploy' | 'qa';
 
-export interface GeneratedRuntimeResult {
-  startedAt: string;
-  services: GeneratedRuntimeServiceResult[];
-}
+export type BlockingIssueSeverity = 'blocking' | 'warning';
 
-export type GeneratedValidationStatus = 'PASS' | 'NEEDS_FIX' | 'SKIPPED';
-export type GeneratedValidationStepStatus = 'PASS' | 'FAIL' | 'SKIPPED';
-
-export interface GeneratedValidationStep {
-  name: string;
-  status: GeneratedValidationStepStatus;
-  command?: string;
-  message: string;
-  logFile?: string;
-}
-
-export interface GeneratedExecutionValidationResult {
-  status: GeneratedValidationStatus;
-  startedAt: string;
-  finishedAt: string;
-  workspace: string;
-  findings: string[];
-  fixInstructions: string;
+export interface BlockingIssue {
+  id: string;
+  createdAt: string;
+  phaseDetected: BlockingIssuePhase;
+  owner: BlockingIssueOwner;
+  severity: BlockingIssueSeverity;
+  title: string;
+  evidence: string;
+  failingCommand?: string;
+  suspectedFiles: string[];
+  requiredFix: string;
+  verifyWith: string[];
   repairScope?: RepairScope;
-  steps: GeneratedValidationStep[];
+}
+
+export interface AssetSearchQuery {
+  label: string;
+  searchTerm: string;
+  role: 'hero' | 'product' | 'detail' | 'background';
+  count: number;
+  aspectRatio?: 'tall' | 'wide' | 'square' | 'any';
+}
+
+export interface AssetAgentOutput {
+  summary: string;
+  queries: AssetSearchQuery[];
+  notes: string;
 }
 
 export interface RunResult {
   runId: string;
   createdAt: string;
   topic: string;
+  cleanGeneratedCode?: boolean;
+  requirementImages?: RequirementImageMetadata[];
+  requirementImage?: RequirementImageMetadata;
+  productAssets?: ProductAssetMetadata[];
+  autoDownloadProductAssets?: boolean;
+  assetOutput?: AssetAgentOutput;
+  assetFindings?: string[];
   baOutput: string;
   devOutput: DevOutput;
   qaOutput: string;
@@ -149,10 +145,106 @@ export interface RunResult {
   qaFindings?: string[];
   qaFixIterations?: number;
   buildReadinessFixIterations?: number;
-  executionValidationFixIterations?: number;
+  preDeploymentGuardValidation?: GeneratedExecutionValidationResult;
+  deploymentOutput?: DeploymentOutput;
+  deploymentFixIterations?: number;
+  blockingIssues?: BlockingIssue[];
+  postDeploymentQaOutput?: string;
+  postDeploymentQaStatus?: QAStatus;
+  postDeploymentQaFindings?: string[];
+  postDeploymentQaFixIterations?: number;
   executionValidation?: GeneratedExecutionValidationResult;
   runtime?: GeneratedRuntimeResult;
+  runSummary?: string;
   events: AgentEvent[];
   outputDir: string;
   codeOutputDir: string;
+}
+
+export type RunProgressStepStatus = 'PENDING' | 'RUNNING' | 'PASS' | 'FAIL' | 'SKIPPED';
+
+export interface RunProgressStep {
+  id: string;
+  label: string;
+  status: RunProgressStepStatus;
+}
+
+export type RunProgressLevel = 'info' | 'success' | 'warn' | 'error';
+
+export interface RunProgressUpdate {
+  stepId?: string;
+  stepLabel?: string;
+  stepStatus?: RunProgressStepStatus;
+  level?: RunProgressLevel;
+  message: string;
+}
+
+export type RunProgressReporter = (update: RunProgressUpdate) => void | Promise<void>;
+
+export interface RunProgressLog {
+  timestamp: string;
+  level: RunProgressLevel;
+  message: string;
+}
+
+export interface RunStatusSnapshot {
+  runId: string;
+  status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  createdAt: string;
+  updatedAt: string;
+  topic: string;
+  currentStepId?: string;
+  steps: RunProgressStep[];
+  logs: RunProgressLog[];
+  result?: RunResult;
+  error?: string;
+}
+
+export type GeneratedValidationStepStatus = 'PASS' | 'FAIL' | 'SKIPPED';
+
+export interface GeneratedValidationStep {
+  name: string;
+  status: GeneratedValidationStepStatus;
+  command?: string;
+  logFile?: string;
+  message: string;
+}
+
+export type RepairScopeKind = 'docker' | 'frontend' | 'backend' | 'database' | 'tests' | 'docs' | 'config' | 'unknown';
+
+export interface RepairScope {
+  kind: RepairScopeKind;
+  label: string;
+  instructions: string;
+  candidatePaths: string[];
+  allowedDirectories: string[];
+  requiresPlanning?: boolean;
+}
+
+export interface GeneratedExecutionValidationResult {
+  status: 'PASS' | 'NEEDS_FIX' | 'SKIPPED';
+  startedAt: string;
+  finishedAt: string;
+  workspace: string;
+  findings: string[];
+  fixInstructions: string;
+  steps: GeneratedValidationStep[];
+  repairScope?: RepairScope;
+}
+
+export interface GeneratedRuntimeServiceResult {
+  name: 'backend' | 'frontend';
+  status: 'RUNNING' | 'FAILED' | 'SKIPPED';
+  cwd: string;
+  command: string;
+  message: string;
+  url?: string;
+  port?: number;
+  pid?: number;
+  logFile?: string;
+}
+
+export interface GeneratedRuntimeResult {
+  startedAt: string;
+  services: GeneratedRuntimeServiceResult[];
 }

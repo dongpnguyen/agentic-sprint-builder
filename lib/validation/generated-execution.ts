@@ -39,8 +39,30 @@ function commandName(name: string) {
   return process.platform === 'win32' ? `${name}.cmd` : name;
 }
 
-function getPythonCommand() {
-  return process.env.PYTHON || 'python';
+function quoteWindowsShellArg(value: string) {
+  if (/^[A-Za-z0-9_./:=+-]+$/.test(value)) return value;
+  return `"${value.replace(/"/g, '\\"')}"`;
+}
+
+function shouldRunThroughWindowsShell(command: string) {
+  return process.platform === 'win32' && /\.(?:cmd|bat)$/i.test(command);
+}
+
+function getPythonCommandCandidates() {
+  const configured = process.env.PYTHON?.trim();
+  if (configured) return [configured];
+  return process.platform === 'win32' ? ['python', 'py'] : ['python3', 'python'];
+}
+
+async function resolvePythonCommand(cwd: string) {
+  for (const candidate of getPythonCommandCandidates()) {
+    const version = await runCommand(candidate, ['--version'], cwd, 15_000);
+    if (version.ok && !/python was not found|not recognized/i.test(version.output)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 function getBackendPort() {
@@ -48,15 +70,23 @@ function getBackendPort() {
 }
 
 function getFrontendPort() {
-  return Number(process.env.GENERATED_FRONTEND_PORT || 3001);
+  return Number(process.env.GENERATED_FRONTEND_PORT || 3000);
 }
 
 function shouldValidateExecution() {
   return process.env.VALIDATE_GENERATED_EXECUTION !== 'false';
 }
 
+function shouldRunStandardGuardMode() {
+  return process.env.ENABLE_STANDARD_GUARD_MODE !== 'false';
+}
+
 function allowDockerValidation() {
   return process.env.ALLOW_GENERATED_DOCKER !== 'false';
+}
+
+function requireDeployedContainers() {
+  return process.env.REQUIRE_DEPLOYED_CONTAINERS !== 'false';
 }
 
 function getPreferredComposeEngine() {
@@ -94,6 +124,7 @@ function shouldSkipWorkspaceEntry(entryName: string) {
     '.venv',
     '.runtime-logs',
     '.validation-logs',
+    '.deployment-logs',
     '.env',
     '__pycache__',
     '.pytest_cache'
@@ -126,7 +157,7 @@ async function readJsonFile<T>(target: string): Promise<T | null> {
   }
 }
 
-async function findFilesByName(dir: string, names: string[], ignored = new Set(['node_modules', '.next', '.git', '.venv', '.runtime-logs', '.validation-logs', '__pycache__', '.pytest_cache'])): Promise<string[]> {
+async function findFilesByName(dir: string, names: string[], ignored = new Set(['node_modules', '.next', '.git', '.venv', '.runtime-logs', '.validation-logs', '.deployment-logs', '__pycache__', '.pytest_cache'])): Promise<string[]> {
   let entries;
   try {
     entries = await fs.readdir(dir, { withFileTypes: true });
@@ -167,16 +198,91 @@ async function writeLog(logDir: string, name: string, content: string) {
   return logFile;
 }
 
+async function removeDirectoryIfExists(target: string) {
+  try {
+    const stat = await fs.stat(target);
+    if (!stat.isDirectory() && !stat.isFile()) return false;
+    await fs.rm(target, { recursive: stat.isDirectory(), force: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function findRuntimeArtifactDirectories(dir: string, ignored = new Set(['node_modules', '.next', '.git', '.venv', '.runtime-logs', '.validation-logs', '.deployment-logs', '__pycache__', '.pytest_cache'])): Promise<string[]> {
+  let entries;
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const matches: string[] = [];
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isFile() && /\.(?:db|sqlite|sqlite3)$/i.test(entry.name)) {
+      matches.push(fullPath);
+      continue;
+    }
+
+    if (entry.isDirectory() && /\.(?:db|sqlite|sqlite3)$/i.test(entry.name)) {
+      matches.push(fullPath);
+      continue;
+    }
+
+    if (entry.isDirectory() && !ignored.has(entry.name)) {
+      matches.push(...(await findRuntimeArtifactDirectories(fullPath, ignored)));
+    }
+  }
+
+  return matches;
+}
+
+async function prepareContainerBuildWorkspace(codeDir: string, logDir: string): Promise<GeneratedValidationStep> {
+  const removed: string[] = [];
+  for (const artifactDir of await findRuntimeArtifactDirectories(codeDir)) {
+    if (await removeDirectoryIfExists(artifactDir)) {
+      removed.push(path.relative(codeDir, artifactDir).replace(/\\/g, '/'));
+    }
+  }
+
+  const message = removed.length
+    ? `Removed stale runtime artifacts before container build: ${removed.join(', ')}.`
+    : 'No stale runtime artifacts were found.';
+  const logFile = await writeLog(logDir, 'prepare-container-workspace', message);
+
+  return {
+    name: 'prepare container workspace',
+    status: 'PASS',
+    command: 'remove stale *.db/*.sqlite artifacts from generated build context',
+    logFile,
+    message
+  };
+}
+
 function runCommand(command: string, args: string[], cwd: string, timeout = COMMAND_TIMEOUT_MS): Promise<CommandResult> {
   return new Promise((resolve) => {
-    execFile(command, args, { cwd, timeout, windowsHide: true }, (error, stdout, stderr) => {
-      const output = [stdout, stderr].filter(Boolean).join('\n');
-      resolve({
-        ok: !error,
-        output,
-        error: error instanceof Error ? error.message : undefined
+    const executable = shouldRunThroughWindowsShell(command) ? process.env.ComSpec || 'cmd.exe' : command;
+    const executableArgs = shouldRunThroughWindowsShell(command)
+      ? ['/d', '/s', '/c', [command, ...args].map(quoteWindowsShellArg).join(' ')]
+      : args;
+
+    try {
+      execFile(executable, executableArgs, { cwd, timeout, windowsHide: true }, (error, stdout, stderr) => {
+        const output = [stdout, stderr].filter(Boolean).join('\n');
+        resolve({
+          ok: !error,
+          output,
+          error: error instanceof Error ? error.message : undefined
+        });
       });
-    });
+    } catch (error) {
+      resolve({
+        ok: false,
+        output: '',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
   });
 }
 
@@ -300,11 +406,267 @@ async function waitForHttp(name: string, urls: string[], timeoutMs = HEALTH_TIME
   };
 }
 
+async function verifyCorsPreflight(onProgress?: RunProgressReporter): Promise<GeneratedValidationStep> {
+  const origin = `http://localhost:${getFrontendPort()}`;
+  const urls = [
+    `http://127.0.0.1:${getBackendPort()}/health`,
+    `http://localhost:${getBackendPort()}/health`
+  ];
+
+  await onProgress?.({
+    stepId: 'execution-validation',
+    stepStatus: 'RUNNING',
+    message: `Checking backend CORS preflight for browser origin ${origin}.`
+  });
+
+  let lastMessage = '';
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        method: 'OPTIONS',
+        headers: {
+          Origin: origin,
+          'Access-Control-Request-Method': 'GET'
+        }
+      });
+      const allowOrigin = response.headers.get('access-control-allow-origin');
+      const vary = response.headers.get('vary');
+
+      if (response.ok && (allowOrigin === origin || allowOrigin === '*')) {
+        return {
+          name: 'backend CORS preflight',
+          status: 'PASS',
+          command: `OPTIONS ${url} Origin: ${origin}`,
+          message: `${url} allowed browser origin ${origin} with Access-Control-Allow-Origin: ${allowOrigin}${vary ? `; Vary: ${vary}` : ''}.`
+        };
+      }
+
+      lastMessage = `${url} returned ${response.status}; Access-Control-Allow-Origin was ${allowOrigin || '(missing)'}.`;
+    } catch (error) {
+      lastMessage = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  return {
+    name: 'backend CORS preflight',
+    status: 'FAIL',
+    command: urls.map((url) => `OPTIONS ${url} Origin: ${origin}`).join(' || '),
+    message:
+      lastMessage ||
+      `Backend did not allow browser origin ${origin}. Configure CORS middleware for localhost/127.0.0.1 frontend origins.`
+  };
+}
+
+function getBrowserCandidates() {
+  const configured = [process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, process.env.BROWSER].filter(Boolean) as string[];
+  const platformCandidates =
+    process.platform === 'win32'
+      ? [
+          'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+          'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+          'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+          'msedge',
+          'chrome'
+        ]
+      : ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'];
+
+  return [...configured, ...platformCandidates];
+}
+
+function isPathLikeCommand(command: string) {
+  return path.isAbsolute(command) || /[\\/]/.test(command);
+}
+
+async function findHeadlessBrowser() {
+  for (const browser of getBrowserCandidates()) {
+    if (isPathLikeCommand(browser) && !(await pathExists(browser))) continue;
+
+    const version = await runCommand(browser, ['--version'], process.cwd(), 15_000);
+    if (version.ok) return browser;
+  }
+
+  return null;
+}
+
+function getScreenshotTargets() {
+  const frontendPort = getFrontendPort();
+  return [
+    { name: 'home', url: `http://127.0.0.1:${frontendPort}/` },
+    { name: 'product-1', url: `http://127.0.0.1:${frontendPort}/product/1` }
+  ];
+}
+
+async function runScreenshotCommand(browser: string, screenshotPath: string, url: string) {
+  const baseArgs = [
+    '--disable-gpu',
+    '--no-first-run',
+    '--no-default-browser-check',
+    '--window-size=1440,1000',
+    `--screenshot=${screenshotPath}`,
+    url
+  ];
+
+  const primary = await runCommand(browser, ['--headless=new', ...baseArgs], process.cwd(), 60_000);
+  if (primary.ok && (await pathExists(screenshotPath))) return primary;
+
+  const fallback = await runCommand(browser, ['--headless', ...baseArgs], process.cwd(), 60_000);
+  if (fallback.ok && (await pathExists(screenshotPath))) return fallback;
+
+  return {
+    ok: false,
+    output: [primary.output, fallback.output].filter(Boolean).join('\n'),
+    error: primary.error || fallback.error
+  };
+}
+
+async function captureDeploymentScreenshots(logDir: string, onProgress?: RunProgressReporter): Promise<GeneratedValidationStep> {
+  await onProgress?.({
+    stepId: 'execution-validation',
+    stepStatus: 'RUNNING',
+    message: 'Capturing browser screenshots for post-deployment QA evidence.'
+  });
+
+  const browser = await findHeadlessBrowser();
+  if (!browser) {
+    await onProgress?.({
+      stepId: 'execution-validation',
+      stepStatus: 'RUNNING',
+      level: 'warn',
+      message: 'No Chrome or Edge executable was found for screenshot capture.'
+    });
+    return skippedStep('deployment screenshots', 'No Chrome or Edge executable was found. Screenshot capture is optional evidence, so deployment was not blocked.');
+  }
+
+  const screenshotDir = path.join(logDir, 'screenshots');
+  await fs.mkdir(screenshotDir, { recursive: true });
+
+  const captured: string[] = [];
+  const failures: string[] = [];
+  for (const target of getScreenshotTargets()) {
+    const screenshotPath = path.join(screenshotDir, `${target.name}.png`);
+    await fs.rm(screenshotPath, { force: true }).catch(() => undefined);
+    const result = await runScreenshotCommand(browser, screenshotPath, target.url);
+    if (result.ok && (await pathExists(screenshotPath))) {
+      captured.push(`${target.name}: ${screenshotPath}`);
+    } else {
+      failures.push(`${target.url}: ${result.error || truncate(maskSecrets(result.output), 500) || 'screenshot command failed'}`);
+    }
+  }
+
+  const logFile = await writeLog(
+    logDir,
+    'deployment-screenshots',
+    [`Browser: ${browser}`, 'Captured:', ...(captured.length ? captured : ['(none)']), 'Failures:', ...(failures.length ? failures : ['(none)'])].join('\n')
+  );
+
+  if (captured.length > 0) {
+    await onProgress?.({
+      stepId: 'execution-validation',
+      stepStatus: 'RUNNING',
+      level: 'success',
+      message: `Captured ${captured.length} deployment screenshot(s).`
+    });
+    return {
+      name: 'deployment screenshots',
+      status: 'PASS',
+      command: `${browser} --headless --screenshot`,
+      logFile,
+      message: `Captured browser screenshot evidence:\n${captured.join('\n')}${failures.length ? `\nNon-blocking capture failures:\n${failures.join('\n')}` : ''}`
+    };
+  }
+
+  return {
+    name: 'deployment screenshots',
+    status: 'SKIPPED',
+    command: `${browser} --headless --screenshot`,
+    logFile,
+    message: `Screenshot capture did not succeed, but this is optional QA evidence and does not block deployment.\n${failures.join('\n')}`
+  };
+}
+
 async function collectComposeLogsForEngine(engine: ComposeEngine, codeDir: string, composeFile: string, logDir: string) {
   const args = [...engine.baseArgs, '-f', composeFile, '-p', COMPOSE_PROJECT_NAME, 'logs', '--tail=150'];
   if (engine.name === 'docker compose') args.splice(args.length - 1, 0, '--no-color');
   const result = await runCommand(engine.command, args, codeDir);
-  return writeLog(logDir, `${engine.name.replace(/\s+/g, '-')}-logs`, result.output);
+  const logFile = await writeLog(logDir, `${engine.name.replace(/\s+/g, '-')}-logs`, result.output);
+  return { logFile, output: result.output };
+}
+
+async function composeLogsStep(engine: ComposeEngine, codeDir: string, composeFile: string, logDir: string): Promise<GeneratedValidationStep> {
+  const logs = await collectComposeLogsForEngine(engine, codeDir, composeFile, logDir);
+  return {
+    name: `${engine.name} logs`,
+    status: 'FAIL',
+    command: `${engine.command} ${[...engine.baseArgs, '-f', composeFile, '-p', COMPOSE_PROJECT_NAME, 'logs', '--tail=150'].join(' ')}`,
+    logFile: logs.logFile,
+    message: `Captured container logs after deployment failure.\n${truncate(maskSecrets(logs.output), 1200)}`
+  };
+}
+
+async function verifySeededProducts(onProgress?: RunProgressReporter): Promise<GeneratedValidationStep> {
+  const urls = [
+    `http://127.0.0.1:${getBackendPort()}/products`,
+    `http://localhost:${getBackendPort()}/products`
+  ];
+  await onProgress?.({
+    stepId: 'execution-validation',
+    stepStatus: 'RUNNING',
+    message: `Verifying seeded product data: ${urls.join(' or ')}`
+  });
+
+  let lastMessage = '';
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, { cache: 'no-store' });
+      const text = await response.text();
+      if (!response.ok) {
+        lastMessage = `${url} returned ${response.status}: ${truncate(text, 500)}`;
+        continue;
+      }
+
+      const data = JSON.parse(text);
+      if (Array.isArray(data) && data.length > 0) {
+        return {
+          name: 'seeded product data',
+          status: 'PASS',
+          command: `GET ${url}`,
+          message: `${url} returned ${data.length} product(s).`
+        };
+      }
+
+      lastMessage = `${url} returned no products: ${truncate(text, 500)}`;
+    } catch (error) {
+      lastMessage = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  return {
+    name: 'seeded product data',
+    status: 'FAIL',
+    command: urls.map((url) => `GET ${url}`).join(' || '),
+    message: lastMessage || 'Seeded product verification failed.'
+  };
+}
+
+async function composeServiceStatusStep(engine: ComposeEngine, codeDir: string, composeFile: string, logDir: string): Promise<GeneratedValidationStep> {
+  const args = [...engine.baseArgs, '-f', composeFile, '-p', COMPOSE_PROJECT_NAME, 'ps', '-a'];
+  const result = await runCommand(engine.command, args, codeDir);
+  const output = maskSecrets(result.output);
+  const logFile = await writeLog(logDir, `${engine.name.replace(/\s+/g, '-')}-ps`, output);
+  const hasExitedService = /\b(?:exited|dead|removing)\b/i.test(output);
+  const status = result.ok && !hasExitedService ? 'PASS' : 'FAIL';
+
+  return {
+    name: `${engine.name} service status`,
+    status,
+    command: `${engine.command} ${args.join(' ')}`,
+    logFile,
+    message:
+      status === 'PASS'
+        ? `Compose services are running.\n${truncate(output, 1200)}`
+        : `One or more Compose services are not running.\n${truncate(output || result.error || 'No service status output.', 1200)}`
+  };
 }
 
 function getComposeEnginesToTry() {
@@ -347,6 +709,8 @@ async function validateWithDockerCompose(codeDir: string, composeFile: string, l
     }
     steps.push(version);
 
+    steps.push(await prepareContainerBuildWorkspace(codeDir, logDir));
+
     const config = await commandStep({
       name: `${engine.name} config`,
       command: engine.command,
@@ -357,6 +721,18 @@ async function validateWithDockerCompose(codeDir: string, composeFile: string, l
     });
     steps.push(config);
     if (config.status === 'FAIL') return steps;
+
+    const down = await commandStep({
+      name: `${engine.name} clear existing containers`,
+      command: engine.command,
+      args: [...engine.baseArgs, '-f', composeFile, '-p', COMPOSE_PROJECT_NAME, 'down', '--remove-orphans', '--volumes'],
+      cwd: codeDir,
+      logDir,
+      timeout: 120_000,
+      onProgress
+    });
+    steps.push(down);
+    if (down.status === 'FAIL') return steps;
 
     const up = await commandStep({
       name: `${engine.name} up`,
@@ -370,24 +746,68 @@ async function validateWithDockerCompose(codeDir: string, composeFile: string, l
     steps.push(up);
 
     if (up.status === 'FAIL') {
-      const logFile = await collectComposeLogsForEngine(engine, codeDir, composeFile, logDir);
-      steps.push({
-        name: `${engine.name} logs`,
-        status: 'FAIL',
-        command: `${engine.command} ${[...engine.baseArgs, '-f', composeFile, '-p', COMPOSE_PROJECT_NAME, 'logs', '--tail=150'].join(' ')}`,
-        logFile,
-        message: `Captured ${engine.name} logs after startup failure.`
-      });
+      steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
       return steps;
     }
 
-    steps.push(
-      await waitForHttp('backend health', [
+    const serviceStatus = await composeServiceStatusStep(engine, codeDir, composeFile, logDir);
+    steps.push(serviceStatus);
+    if (serviceStatus.status === 'FAIL') {
+      steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
+      return steps;
+    }
+
+    const backendHealth = await waitForHttp('backend health', [
         `http://127.0.0.1:${getBackendPort()}/health`,
         `http://localhost:${getBackendPort()}/health`
-      ], HEALTH_TIMEOUT_MS, onProgress)
-    );
-    steps.push(await waitForHttp('frontend health', [`http://127.0.0.1:${getFrontendPort()}/`, `http://localhost:${getFrontendPort()}/`], HEALTH_TIMEOUT_MS, onProgress));
+      ], HEALTH_TIMEOUT_MS, onProgress);
+    steps.push(backendHealth);
+    if (backendHealth.status === 'FAIL') {
+      steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
+      return steps;
+    }
+
+    const backendCors = await verifyCorsPreflight(onProgress);
+    steps.push(backendCors);
+    if (backendCors.status === 'FAIL') {
+      steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
+      return steps;
+    }
+
+    if (await pathExists(path.join(codeDir, 'backend', 'seed_data.py'))) {
+      const seedData = await commandStep({
+          name: `${engine.name} seed data`,
+          command: engine.command,
+          args: [...engine.baseArgs, '-f', composeFile, '-p', COMPOSE_PROJECT_NAME, 'exec', '-T', 'backend', 'python', 'seed_data.py'],
+          cwd: codeDir,
+          logDir,
+          timeout: 120_000,
+          onProgress
+        });
+      steps.push(seedData);
+      if (seedData.status === 'FAIL') {
+        steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
+        return steps;
+      }
+
+      const seededProducts = await verifySeededProducts(onProgress);
+      steps.push(seededProducts);
+      if (seededProducts.status === 'FAIL') {
+        steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
+        return steps;
+      }
+    } else {
+      steps.push(skippedStep('seed data', 'No backend/seed_data.py script was generated.'));
+    }
+
+    const frontendHealth = await waitForHttp('frontend health', [`http://127.0.0.1:${getFrontendPort()}/`, `http://localhost:${getFrontendPort()}/`], HEALTH_TIMEOUT_MS, onProgress);
+    steps.push(frontendHealth);
+    if (frontendHealth.status === 'FAIL') {
+      steps.push(await composeLogsStep(engine, codeDir, composeFile, logDir));
+      return steps;
+    }
+
+    steps.push(await captureDeploymentScreenshots(logDir, onProgress));
 
     const backendTestsExist = (await pathExists(path.join(codeDir, 'backend', 'tests'))) || (await pathExists(path.join(codeDir, 'backend', 'app', 'tests')));
     if (backendTestsExist) {
@@ -438,6 +858,7 @@ async function validateLocalNode(codeDir: string, logDir: string, onProgress?: R
   const steps: GeneratedValidationStep[] = [];
   const npm = commandName('npm');
   steps.push(await commandStep({ name: 'frontend install', command: npm, args: ['install'], cwd: frontendDir, logDir, timeout: 300_000, onProgress }));
+  if (steps[steps.length - 1].status === 'FAIL') return steps;
 
   for (const script of ['lint', 'test', 'build']) {
     if (packageJson.scripts?.[script]) {
@@ -456,7 +877,11 @@ async function validateLocalPython(codeDir: string, logDir: string, onProgress?:
   const requirements = path.join(backendDir, 'requirements.txt');
   if (!(await pathExists(requirements))) return [skippedStep('backend local validation', 'Generated backend does not use requirements.txt; Python local validation currently supports requirements.txt only.')];
 
-  const python = getPythonCommand();
+  const python = await resolvePythonCommand(backendDir);
+  if (!python) {
+    return validatePythonWithContainer(backendDir, logDir, onProgress);
+  }
+
   const venvDir = path.join(backendDir, '.venv');
   const venvPython = process.platform === 'win32' ? path.join(venvDir, 'Scripts', 'python.exe') : path.join(venvDir, 'bin', 'python');
   const steps: GeneratedValidationStep[] = [];
@@ -467,6 +892,47 @@ async function validateLocalPython(codeDir: string, logDir: string, onProgress?:
   }
 
   steps.push(await commandStep({ name: 'backend install', command: venvPython, args: ['-m', 'pip', 'install', '-r', 'requirements.txt'], cwd: backendDir, logDir, timeout: 300_000, onProgress }));
+  if (steps[steps.length - 1].status === 'FAIL') return steps;
+
+  steps.push(await commandStep({ name: 'backend compile', command: venvPython, args: ['-m', 'compileall', '-q', '-x', '.*\\.venv.*', '.'], cwd: backendDir, logDir, onProgress }));
+  if (steps[steps.length - 1].status === 'FAIL') return steps;
+
+  const entrypoint = await findBackendImportTarget(backendDir);
+  if (entrypoint) {
+    steps.push(
+      await commandStep({
+        name: 'backend import',
+        command: venvPython,
+        args: ['-c', `__import__('importlib').import_module('${entrypoint}')`],
+        cwd: backendDir,
+        logDir,
+        onProgress
+      })
+    );
+    if (steps[steps.length - 1].status === 'FAIL') return steps;
+  } else {
+    steps.push(skippedStep('backend import', 'No common backend entrypoint was found for import validation.'));
+  }
+
+  const seedScript = await findBackendSeedScript(backendDir);
+  if (seedScript && (await backendUsesLocalSqlite(backendDir))) {
+    steps.push(
+      await commandStep({
+        name: 'backend seed data',
+        command: venvPython,
+        args: [path.relative(backendDir, seedScript)],
+        cwd: backendDir,
+        logDir,
+        timeout: 120_000,
+        onProgress
+      })
+    );
+    if (steps[steps.length - 1].status === 'FAIL') return steps;
+  } else if (seedScript) {
+    steps.push(skippedStep('backend seed data', 'Seed script exists, but local guard skipped it because no SQLite/local database default was detected.'));
+  } else {
+    steps.push(skippedStep('backend seed data', 'No backend seed script was generated.'));
+  }
 
   const testsExist = (await pathExists(path.join(backendDir, 'tests'))) || (await pathExists(path.join(backendDir, 'app', 'tests')));
   if (testsExist) {
@@ -476,6 +942,110 @@ async function validateLocalPython(codeDir: string, logDir: string, onProgress?:
   }
 
   return steps;
+}
+
+function shellQuote(value: string) {
+  return `'${value.replace(/'/g, `'\"'\"'`)}'`;
+}
+
+function dockerMountPath(value: string) {
+  return value.replace(/\\/g, '/');
+}
+
+async function validatePythonWithContainer(backendDir: string, logDir: string, onProgress?: RunProgressReporter): Promise<GeneratedValidationStep[]> {
+  if (!allowDockerValidation()) {
+    return [skippedStep('backend local validation', 'No usable local Python command was found and ALLOW_GENERATED_DOCKER=false, so backend local guard was skipped.')];
+  }
+
+  const dockerVersion = await runCommand('docker', ['version'], backendDir, 30_000);
+  if (!dockerVersion.ok) {
+    return [skippedStep('backend local validation', 'No usable local Python command or Docker engine was found, so backend local guard was skipped.')];
+  }
+
+  const commands = ['python -m pip install -r requirements.txt', 'python -m compileall -q .'];
+  const entrypoint = await findBackendImportTarget(backendDir);
+  if (entrypoint) {
+    commands.push(`python -c "__import__('importlib').import_module('${entrypoint}')"`);
+  }
+
+  const seedScript = await findBackendSeedScript(backendDir);
+  if (seedScript && (await backendUsesLocalSqlite(backendDir))) {
+    commands.push(`python ${shellQuote(dockerMountPath(path.relative(backendDir, seedScript)))}`);
+  }
+
+  const testsExist = (await pathExists(path.join(backendDir, 'tests'))) || (await pathExists(path.join(backendDir, 'app', 'tests')));
+  if (testsExist) {
+    commands.push('python -m pytest');
+  }
+
+  return [
+    await commandStep({
+      name: 'backend containerized guard',
+      command: 'docker',
+      args: ['run', '--rm', '-v', `${dockerMountPath(backendDir)}:/app`, '-w', '/app', 'python:3.11-slim-bullseye', 'sh', '-c', commands.join(' && ')],
+      cwd: backendDir,
+      logDir,
+      timeout: 300_000,
+      onProgress
+    })
+  ];
+}
+
+async function findBackendImportTarget(backendDir: string) {
+  const candidates = [
+    { file: path.join(backendDir, 'main.py'), module: 'main' },
+    { file: path.join(backendDir, 'app.py'), module: 'app' },
+    { file: path.join(backendDir, 'app', 'main.py'), module: 'app.main' }
+  ];
+
+  for (const candidate of candidates) {
+    if (await pathExists(candidate.file)) return candidate.module;
+  }
+
+  return null;
+}
+
+async function findBackendSeedScript(backendDir: string) {
+  const candidates = await findFilesByName(backendDir, ['seed_data.py', 'seed.py']);
+  return candidates[0] ?? null;
+}
+
+async function collectPythonFiles(dir: string, ignored = new Set(['.venv', '__pycache__', '.pytest_cache'])): Promise<string[]> {
+  let entries;
+  try {
+    entries = await fs.readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const files: string[] = [];
+  for (const entry of entries) {
+    if (ignored.has(entry.name)) continue;
+
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await collectPythonFiles(fullPath, ignored)));
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.py')) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+async function backendUsesLocalSqlite(backendDir: string) {
+  const pythonFiles = await collectPythonFiles(backendDir);
+  const chunks: string[] = [];
+
+  for (const file of pythonFiles.slice(0, 50)) {
+    try {
+      chunks.push(await fs.readFile(file, 'utf-8'));
+    } catch {
+      // Ignore unreadable generated files; the compile/import guard will surface real syntax/runtime failures.
+    }
+  }
+
+  return /sqlite:\/\/|sqlite3|database\.db|\.sqlite|\.sqlite3/i.test(chunks.join('\n'));
 }
 
 function buildResult(params: {
@@ -510,6 +1080,21 @@ async function addRepairScope(result: GeneratedExecutionValidationResult) {
   return {
     ...result,
     repairScope: inferExecutionRepairScope(result, files)
+  };
+}
+
+function enforceRequiredContainerDeployment(result: GeneratedExecutionValidationResult): GeneratedExecutionValidationResult {
+  if (result.status !== 'SKIPPED' || !requireDeployedContainers()) return result;
+
+  const findings = [
+    'Container deployment was not executed. Rancher Desktop, Docker Compose, or nerdctl compose must be available before post-deployment QA can run.'
+  ];
+
+  return {
+    ...result,
+    status: 'NEEDS_FIX',
+    findings,
+    fixInstructions: `Enable and run local container deployment before post-deployment QA:\n${findings.map((finding) => `- ${finding}`).join('\n')}`
   };
 }
 
@@ -553,4 +1138,78 @@ export async function validateGeneratedProjectExecution(onProgress?: RunProgress
   steps.push(...(await validateLocalPython(codeDir, logDir, onProgress)));
 
   return addRepairScope(buildResult({ startedAt, workspace: codeDir, steps }));
+}
+
+export async function validateGeneratedProjectBuildGuard(onProgress?: RunProgressReporter): Promise<GeneratedExecutionValidationResult> {
+  const startedAt = new Date().toISOString();
+  const generatedCodeDir = getGeneratedCodeDir();
+  const codeDir = createValidationWorkspacePath();
+  const logDir = path.join(codeDir, '.validation-logs');
+
+  if (!shouldValidateExecution() || !shouldRunStandardGuardMode()) {
+    return buildResult({
+      startedAt,
+      workspace: generatedCodeDir,
+      skipped: true,
+      steps: [skippedStep('standard guard mode', 'Standard Guard Mode was disabled by environment configuration.')]
+    });
+  }
+
+  await copyDirectoryForValidation(generatedCodeDir, codeDir);
+  await fs.mkdir(logDir, { recursive: true });
+  await onProgress?.({
+    stepId: 'standard-guard',
+    stepStatus: 'RUNNING',
+    message: `Standard Guard Mode workspace created at ${codeDir}.`
+  });
+
+  const steps: GeneratedValidationStep[] = [await copyEnvExampleIfSafe(codeDir)];
+  steps.push(...(await validateLocalNode(codeDir, logDir, onProgress)));
+  steps.push(...(await validateLocalPython(codeDir, logDir, onProgress)));
+
+  return addRepairScope(buildResult({ startedAt, workspace: codeDir, steps }));
+}
+
+export async function deployGeneratedProjectContainers(onProgress?: RunProgressReporter): Promise<GeneratedExecutionValidationResult> {
+  const startedAt = new Date().toISOString();
+  const codeDir = getGeneratedCodeDir();
+  const logDir = path.join(codeDir, '.deployment-logs');
+
+  if (!shouldValidateExecution()) {
+    return enforceRequiredContainerDeployment(
+      buildResult({
+        startedAt,
+        workspace: codeDir,
+        skipped: true,
+        steps: [skippedStep('container deployment', 'VALIDATE_GENERATED_EXECUTION=false.')]
+      })
+    );
+  }
+
+  await fs.mkdir(logDir, { recursive: true });
+  await onProgress?.({
+    stepId: 'runtime',
+    stepStatus: 'RUNNING',
+    message: `Deploying generated containers from ${codeDir}.`
+  });
+
+  const composeFile = await resolveComposeFile(codeDir);
+  if (!composeFile) {
+    return buildResult({
+      startedAt,
+      workspace: codeDir,
+      steps: [
+        {
+          name: 'compose file',
+          status: 'FAIL',
+          message: 'No compose.yaml, compose.yml, docker-compose.yaml, or docker-compose.yml file was found.'
+        }
+      ]
+    });
+  }
+
+  const steps: GeneratedValidationStep[] = [await copyEnvExampleIfSafe(codeDir)];
+  steps.push(...(await validateWithDockerCompose(codeDir, composeFile, logDir, onProgress)));
+
+  return addRepairScope(enforceRequiredContainerDeployment(buildResult({ startedAt, workspace: codeDir, steps })));
 }

@@ -1,0 +1,427 @@
+npm warn Unknown user config "always-auth". This will stop working in the next major version of npm.
+npm warn Unknown user config "​". This will stop working in the next major version of npm.
+[asset-agent] Could not parse structured output: [
+  {
+    "code": "too_big",
+    "maximum": 4,
+    "type": "number",
+    "inclusive": true,
+    "exact": false,
+    "message": "Number must be less than or equal to 4",
+    "path": [
+      "queries",
+      3,
+      "count"
+    ]
+  }
+]. Raw prefix: {"summary":"Image assets needed for a luxury watch shopping app with a dark theme and gold accents, including hero background, product listing images, detailed product images with thumbnails, and iconography for warranty, delivery, and craftsmanship.","queries":[{"label":"Hero background image","searchTerm":"luxury watch movement macro","role":"hero","count":1,"aspectRatio":"wide"},{"label":"Featured watch product images","searchTerm":"luxury mechanical watch","role":"product","count":4,"aspectR
+ ⨯ Error: Cannot find module './276.js'
+Require stack:
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\build\utils.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1419:15)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Module._load (node:internal/modules/cjs/loader:1225:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3336
+    at Object.<anonymous> (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3381)
+    at Module._compile (node:internal/modules/cjs/loader:1759:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1479:32)
+    at Module._load (node:internal/modules/cjs/loader:1298:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2090:30)
+    at async pipe.req.req (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2056:30)
+    at async DevServer.pipeImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:922:25)
+    at async C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:374:24)
+    at async requestHandlerImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\app\\_not-found\\page.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ ⨯ Error: Cannot find module './276.js'
+Require stack:
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\build\utils.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1419:15)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Module._load (node:internal/modules/cjs/loader:1225:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3336
+    at Object.<anonymous> (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3381)
+    at Module._compile (node:internal/modules/cjs/loader:1759:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1479:32)
+    at Module._load (node:internal/modules/cjs/loader:1298:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2090:30)
+    at async DevServer.pipeImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:922:25)
+    at async NextNodeServer.handleCatchallRenderRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:272:17)
+    at async DevServer.handleRequestImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:818:17)
+    at async C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:359:24)
+    at async requestHandlerImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\app\\_not-found\\page.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ Error: Cannot find module './276.js'
+Require stack:
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\page.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\build\utils.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1419:15)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Module._load (node:internal/modules/cjs/loader:1225:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3336
+    at Object.<anonymous> (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3381)
+    at Module._compile (node:internal/modules/cjs/loader:1759:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1479:32)
+    at Module._load (node:internal/modules/cjs/loader:1298:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2090:30)
+    at async pipe.req.req (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2056:30)
+    at async DevServer.pipeImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:922:25)
+    at async C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:374:24)
+    at async requestHandlerImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\app\\page.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ ⨯ Error: Cannot find module './276.js'
+Require stack:
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\page.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\build\utils.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1419:15)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Module._load (node:internal/modules/cjs/loader:1225:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3336
+    at Object.<anonymous> (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3381)
+    at Module._compile (node:internal/modules/cjs/loader:1759:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1479:32)
+    at Module._load (node:internal/modules/cjs/loader:1298:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2090:30)
+    at async pipe.req.req (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2056:30)
+    at async DevServer.pipeImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:922:25)
+    at async C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:374:24)
+    at async requestHandlerImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\app\\page.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ ⨯ Error: Cannot find module './276.js'
+Require stack:
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\page.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\build\utils.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1419:15)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Module._load (node:internal/modules/cjs/loader:1225:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3336
+    at Object.<anonymous> (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3381)
+    at Module._compile (node:internal/modules/cjs/loader:1759:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1479:32)
+    at Module._load (node:internal/modules/cjs/loader:1298:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2090:30)
+    at async pipe.req.req (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2056:30)
+    at async DevServer.pipeImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:922:25)
+    at async C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:374:24)
+    at async requestHandlerImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\app\\page.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}
+ ⨯ Error: Cannot find module './276.js'
+Require stack:
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\page.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\build\utils.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-middleware.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\hot-reloader-webpack.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-utils\setup-dev-bundler.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js
+- C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1419:15)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)
+    at Module._load (node:internal/modules/cjs/loader:1225:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at __webpack_require__.f.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:198:28)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:111:40
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:110:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\webpack-runtime.js:162:22)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3336
+    at Object.<anonymous> (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\.next\server\app\_not-found\page.js:1:3381)
+    at Module._compile (node:internal/modules/cjs/loader:1759:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1479:32)
+    at Module._load (node:internal/modules/cjs/loader:1298:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1502:12)
+    at mod.require (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\require.js:109:84)
+    at C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:84
+    at async loadComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\load-components.js:103:26)
+    at async DevServer.findPageComponentsImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\next-server.js:714:36)
+    at async DevServer.findPageComponents (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:577:20)
+    at async DevServer.renderErrorToResponseImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2090:30)
+    at async pipe.req.req (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:2056:30)
+    at async DevServer.pipeImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\base-server.js:922:25)
+    at async C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:339:20
+    at async Span.traceAsyncFn (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\trace\trace.js:154:20)
+    at async DevServer.handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\dev\next-dev-server.js:336:24)
+    at async invokeRender (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:179:21)
+    at async handleRequest (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:374:24)
+    at async requestHandlerImpl (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\router-server.js:383:13)
+    at async Server.requestListener (C:\Users\dongpnguyen\Work\AI\agentic-sprint-builder\node_modules\next\dist\server\lib\start-server.js:141:13) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\.next\\server\\app\\page.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\require.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\load-components.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\build\\utils.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-middleware.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\dev\\hot-reloader-webpack.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-utils\\setup-dev-bundler.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\router-server.js',
+    'C:\\Users\\dongpnguyen\\Work\\AI\\agentic-sprint-builder\\node_modules\\next\\dist\\server\\lib\\start-server.js'
+  ]
+}

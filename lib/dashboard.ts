@@ -2,8 +2,10 @@ import type { AgentEvent, AgentId, DashboardEventType } from '@/lib/types';
 
 const AGENTS = [
   { agent_id: 'ba', name: 'Alice BA', role: 'analyst' },
+  { agent_id: 'asset', name: 'Aria ASSET', role: 'asset' },
   { agent_id: 'dev', name: 'Bob DEV', role: 'dev' },
-  { agent_id: 'qa', name: 'Carol QA', role: 'qa' }
+  { agent_id: 'qa', name: 'Carol QA', role: 'qa' },
+  { agent_id: 'deploy', name: 'Dana DEPLOY', role: 'deploy' }
 ];
 
 export interface DashboardClient {

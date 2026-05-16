@@ -1,0 +1,94 @@
+{
+  "name": "aurum-watches",
+  "description": "Lightweight luxury watch imagery for Aurum/Horologue mockup generation.",
+  "preparedAt": "2026-05-16",
+  "usage": "Select this folder in the dashboard Product image assets picker.",
+  "licenseNotes": [
+    "Assets were downloaded from Unsplash and Pexels free-use photo sources.",
+    "Attribution is not required by the source licenses, but links are retained for traceability.",
+    "Do not imply endorsement by any photographer, platform, or visible product brand."
+  ],
+  "assets": [
+    {
+      "file": "hero-watch-movement.jpg",
+      "role": "hero movement background",
+      "width": 1600,
+      "height": 1448,
+      "sizeBytes": 313868,
+      "source": "https://unsplash.com/photos/a-close-up-view-of-a-watch-movement-HmIwomthlWw",
+      "license": "https://unsplash.com/license"
+    },
+    {
+      "file": "black-leather-minimal.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 1800,
+      "sizeBytes": 80303,
+      "source": "https://www.pexels.com/photo/close-up-of-a-luxury-watch-with-a-leather-strap-22032446/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "classic-leather-monochrome.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 800,
+      "sizeBytes": 122407,
+      "source": "https://www.pexels.com/photo/wristwatch-with-leather-strap-20267130/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "classic-dial-texture.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 812,
+      "sizeBytes": 126669,
+      "source": "https://www.pexels.com/photo/close-up-of-a-wristwatch-6804453/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "gold-rim-leather-pouch.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 1500,
+      "sizeBytes": 221455,
+      "source": "https://www.pexels.com/photo/a-close-up-shot-of-a-wristwatch-with-leather-straps-8972624/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "heritage-watch-cocktail.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 1793,
+      "sizeBytes": 165446,
+      "source": "https://www.pexels.com/photo/wristwatch-with-leather-straps-12937377/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "studio-watch-fabric.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 1500,
+      "sizeBytes": 214466,
+      "source": "https://www.pexels.com/photo/poze-sonata-watch-25839565/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "vintage-watch-green-leaves.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 1800,
+      "sizeBytes": 103547,
+      "source": "https://www.pexels.com/photo/luxurious-analog-watch-18280292/",
+      "license": "https://www.pexels.com/license/"
+    },
+    {
+      "file": "brown-leather-dark-watch.jpg",
+      "role": "product watch",
+      "width": 1200,
+      "height": 1800,
+      "sizeBytes": 118754,
+      "source": "https://www.pexels.com/photo/close-up-photo-of-a-wristwatch-14525782/",
+      "license": "https://www.pexels.com/license/"
+    }
+  ]
+}

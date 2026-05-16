@@ -4,10 +4,13 @@ const MAX_LOGS = 500;
 
 const DEFAULT_STEPS: RunProgressStep[] = [
   { id: 'ba', label: 'BA analysis', status: 'PENDING' },
+  { id: 'asset', label: 'Asset preparation', status: 'PENDING' },
   { id: 'dev', label: 'DEV generation', status: 'PENDING' },
   { id: 'static-validation', label: 'Static readiness', status: 'PENDING' },
+  { id: 'standard-guard', label: 'Standard Guard Mode', status: 'PENDING' },
   { id: 'execution-validation', label: 'Build/run/test validation', status: 'PENDING' },
-  { id: 'qa', label: 'QA review', status: 'PENDING' },
+  { id: 'qa', label: 'Code review', status: 'PENDING' },
+  { id: 'deploy', label: 'Deployment packaging', status: 'PENDING' },
   { id: 'runtime', label: 'Local runtime', status: 'PENDING' },
   { id: 'complete', label: 'Done', status: 'PENDING' }
 ];
@@ -92,7 +95,12 @@ export function updateRunProgress(runId: string, update: RunProgressUpdate) {
 export function completeRunStatus(runId: string, result: RunResult) {
   const snapshot = runs.get(runId) ?? createRunStatus(runId, result.topic);
   const hasRuntimeFailures = result.runtime?.services.some((service) => service.status === 'FAILED') ?? false;
-  const hasBlockingIssues = result.executionValidation?.status === 'NEEDS_FIX' || result.qaStatus === 'NEEDS_FIX' || hasRuntimeFailures;
+  const hasBlockingIssues =
+    result.preDeploymentGuardValidation?.status === 'NEEDS_FIX' ||
+    result.executionValidation?.status === 'NEEDS_FIX' ||
+    result.qaStatus === 'NEEDS_FIX' ||
+    result.postDeploymentQaStatus === 'NEEDS_FIX' ||
+    hasRuntimeFailures;
 
   snapshot.status = 'COMPLETED';
   snapshot.updatedAt = now();

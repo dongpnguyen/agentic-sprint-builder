@@ -15,7 +15,7 @@ export default async function RunsPage() {
               <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Run History</p>
               <h1 className="mt-2 text-4xl font-bold">Agent Outputs</h1>
               <p className="mt-3 max-w-3xl text-slate-600">
-                Review BA, DEV, and QA artifacts from previous AI Team runs.
+                Review BA, DEV, QA, and DEPLOY artifacts from previous AI Team runs.
               </p>
             </div>
             <Link href="/" className="rounded-2xl border border-slate-200 px-5 py-3 font-semibold hover:bg-slate-50">
@@ -44,16 +44,21 @@ export default async function RunsPage() {
                   </div>
                   <div className="grid gap-2 text-sm text-slate-600 md:min-w-72">
                     <p>Events: {run.events.length}</p>
+                    <p>Cleaned generated code: {run.cleanGeneratedCode ? 'Yes' : 'No'}</p>
+                    <p>Requirement images: {formatRequirementImageNames(run)}</p>
+                    <p>Product assets: {formatProductAssetNames(run)}</p>
+                    <p>Auto asset download: {run.autoDownloadProductAssets ? 'Yes' : 'No'}</p>
                     <p>Files changed: {run.devOutput.files.length}</p>
-                    <p>QA status: {run.qaStatus || 'Not recorded'}</p>
+                    <p>Standard guard: {run.preDeploymentGuardValidation?.status || 'Not run'}</p>
+                    <p>Deployment files: {run.deploymentOutput?.files.length ?? 0}</p>
+                    <p>Container runtime: {run.executionValidation?.status || 'Not run'}</p>
+                    <p>Code review: {run.qaStatus || 'Not recorded'}</p>
+                    <p>Deployment: {run.deploymentOutput ? 'Completed' : 'Skipped'}</p>
+                    <p>Post-deploy QA: {run.postDeploymentQaStatus || 'Not recorded'}</p>
                     <p>Readiness fixes: {run.buildReadinessFixIterations ?? 0}</p>
-                    <p>Execution validation: {run.executionValidation?.status || 'Not recorded'}</p>
-                    <p>
-                      Runtime:{' '}
-                      {run.runtime
-                        ? run.runtime.services.map((service) => `${service.name} ${service.status}`).join(', ')
-                        : 'Not recorded'}
-                    </p>
+                    <p>Code review fixes: {run.qaFixIterations ?? 0}</p>
+                    <p>Deployment fixes: {run.deploymentFixIterations ?? 0}</p>
+                    <p>Post-deploy fixes: {run.postDeploymentQaFixIterations ?? 0}</p>
                     <p>Generated code: {run.codeOutputDir || 'generated-code'}</p>
                   </div>
                 </div>
@@ -64,4 +69,16 @@ export default async function RunsPage() {
       </div>
     </main>
   );
+}
+
+function formatRequirementImageNames(run: Awaited<ReturnType<typeof listRunResults>>[number]) {
+  if (run.requirementImages?.length) {
+    return run.requirementImages.map((image, index) => `${index + 1}. ${image.name}`).join(', ');
+  }
+
+  return run.requirementImage ? run.requirementImage.name : 'None';
+}
+
+function formatProductAssetNames(run: Awaited<ReturnType<typeof listRunResults>>[number]) {
+  return run.productAssets?.length ? `${run.productAssets.length} asset(s)` : 'None';
 }

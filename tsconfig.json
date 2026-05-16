@@ -35,9 +35,6 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "generated-code",
-    "generated-runs",
-    "examples"
+    "node_modules"
   ]
 }
